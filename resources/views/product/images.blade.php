@@ -1,17 +1,26 @@
-@extends('admin/layouts/app')
+@extends('layouts/app')
 
 @section('title', 'Product')
 
 @section('page_heading', 'Product Images')
 
-@section('breadcrumb')
-
-    <ol class="breadcrumb float-sm-right">
-        <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item"><a href="{{url('admin/product')}}">Products</a></li>
-        <li class="breadcrumb-item active">Add Images</li>
-    </ol>
-@endsection
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Edit Profile</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Edit Profile</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
 
 @section('content')
 
@@ -58,7 +67,7 @@
                 <div class="card-header">
                     <h4 class="card-title">Upload Image</h4>
                 </div>
-                <form class="uploader" action="{{ url('admin/product/'.$product->id.'/images') }}" method="post" enctype="multipart/form-data">
+                <form class="uploader" action="{{ url('product/'.$product->id.'/images') }}" method="post" enctype="multipart/form-data">
                     @csrf
                         <div class="card-body">
 
@@ -81,7 +90,8 @@
       </div>
       <!-- /.row -->
     </div><!-- /.container-fluid -->
-  </section>
+</section>
+</div><!-- /.container-fluid -->
   <!-- /.content -->
 @endsection
 

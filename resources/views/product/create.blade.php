@@ -10,12 +10,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Edit Profile</h1>
+            <h1>Product Create</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Edit Profile</li>
+              <li class="breadcrumb-item active">Product Create</li>
             </ol>
           </div>
         </div>
@@ -35,7 +35,7 @@
       </div>
       <!-- /.card-header -->
       <!-- form start -->
-      <form id="createProduct" action="{{url('admin/product/store')}}" method="post" enctype="multipart/form-data">
+      <form id="createProduct" action="{{route('product.store')}}" method="post" enctype="multipart/form-data">
          @csrf
          <div class="card-body">
             <div class="row">
@@ -75,13 +75,13 @@
                      </div>
                   </div>
                   
-                   <label for="regular_price" class="control-label mb-1">Item Price</label>
+                   <!-- <label for="regular_price" class="control-label mb-1">Item Price</label>
                   <div class="input-group mb-3">
                      <input type="text" class="form-control" name="pr_item_price" value="{{old('pr_item_price')}}">
                      <div class="input-group-append">
                         <span class="input-group-text">.00</span>
                      </div>
-                  </div>
+                  </div> -->
                   
                   
                   
@@ -101,7 +101,7 @@
                      <input type="number" value="1" class="form-control" name="stock" value="{{old('stock')}}">
                   </div>
                   <div class="form-group">
-                     <label>Long Description</label>
+                     <label>Description</label>
                      <textarea class="form-control" rows="3" name="description">{{old('description')}}</textarea>
                   </div>
                   <div class="form-group">
@@ -132,6 +132,7 @@
    </div>
    <!-- /.container-fluid -->
 </section>
+</div>
 <!-- /.content -->
 @endsection
 @push('scripts')

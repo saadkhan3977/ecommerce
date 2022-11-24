@@ -288,7 +288,7 @@
             </a>
             <ul class="nav nav-treeview">
               @can('product-list')
-              <!-- @can('permission-list') -->
+
               <li class="nav-item">
                 <a href="{{route('product.index')}}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
@@ -296,7 +296,7 @@
                 </a>
               </li>
               @endcan
-              <!-- @endcan -->
+
               @can('product-create')
               <li class="nav-item">
                 <a href="{{route('product.create')}}" class="nav-link">

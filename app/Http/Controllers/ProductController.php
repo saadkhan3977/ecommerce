@@ -7,6 +7,7 @@ use Spatie\Permission\Models\Role;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Cart;
 use App\Models\SubCategory;
 use App\Models\ProductImage;
 use App\Models\User;
@@ -14,7 +15,8 @@ use App\Models\User;
 use Carbon\Carbon;
 use File;
 use Cviebrock\EloquentSluggable\Services\SlugService;
-
+use Illuminate\Support\Str;
+use Session;
 use Image;
 use Auth;
 use Validator;
@@ -34,7 +36,18 @@ class ProductController extends Controller
     
     public function index()
 	{
-		$products = Product::latest('id')->get();
+       $userid =  Auth::user()->roles['0']->pivot->role_id;
+        $role = Role::find($userid)->name;
+        // return Product::join("role_has_permissions","role_has_permissions.role_id","=",$userid)->get();
+		if($role != 'Admin')
+        {   
+            $products = Product::where('user_id',Auth::user()->id)->get();
+        }
+        else
+        {
+            $products = Product::get();
+        }
+
 	    return view('product.index')->with('products',$products);
 	}
 
@@ -48,26 +61,22 @@ class ProductController extends Controller
     public function store(Request $request){
         
         // return $request->all();
-        $vendor_id =  Category::where('id',$request->category_id)->first()->vendor_id;
         
         $request->validate([
             'product_name' => 'required',
             'regular_price' => 'required',
-            'category_id' =>'required',
+            'subcat_id' =>'required',
             'pr_item_price' =>'required',
             'stock'         =>'required',
             'product_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
-        ],
-         [
-        'category_id.required' => 'Shop is required!',
         ]);
         
-        $vendor_id =  Category::where('id',$request->category_id)->first()->vendor_id;
+        $vendor_id =  Category::where('id',$request->category_id)->first();
         $product = new Product();
         $product->user_id = Auth::id();
         $product->product_name = $request->product_name;
 
-        $product->product_slug=SlugService::createSlug(Product::class, 'product_slug', $request->product_name);
+        $product->product_slug= Str::slug($request->product_name);
 
         $product->regular_price = $request->regular_price;
         $product->pr_item_price = $request->pr_item_price;
@@ -78,7 +87,7 @@ class ProductController extends Controller
         /////////////////
         $product->category_id =$request->category_id;
         $product->subcat_id =$request->subcat_id;
-        $product->vendor_id = $vendor_id;
+        // $product->vendor_id = $vendor_id;
 
         // $product->color = json_encode(array_values(array_filter($request->colors)));
         // $product->size = json_encode(array_values(array_filter($request->sizes)));
@@ -88,7 +97,7 @@ class ProductController extends Controller
         {
             $image = $request->file('product_image');
             $input['imagename'] = Carbon::now()->timestamp.'.'.$image->getClientOriginalExtension();
-            $destinationPath = public_path('/assets/images/product');
+            $destinationPath = public_path('/uploads/product');
             $img = Image::make($image->getRealPath());
             $img->resize(460, 480, function ($constraint){
                 $constraint->aspectRatio();
@@ -97,22 +106,20 @@ class ProductController extends Controller
         }
         $product->save();
 
-        $product->categories()->attach($request->category_id);
-
         $request->session()->flash('SUCCESSS' , 'Product inserted!');
 
-        return redirect('admin/product');
+        return redirect('product');
 
     }
 
     public function edit($id)
     {
         
-        $product = Product::find($id);
-        $categories = Category::where('status',1)->get();
-        $subcat = SubCategory::where('status',1)->get();
-        $vendors = User::where(['type' => 'vendor'])->get();
-        return view('product.edit')->with('subcat',$subcat)->with('product',$product)->with('categories',$categories)->with('vendors',$vendors);
+        $data['product'] = Product::find($id);
+        // $categories = Category::->get();
+        $data['subcat'] = SubCategory::get();
+        $data['vendors'] = User::get();
+        return view('product.edit',$data);
     }
 
 
@@ -128,30 +135,31 @@ class ProductController extends Controller
 		$product->user_id=Auth::id();
         $product->product_name=$request->product_name;
 
-        $product->product_slug=SlugService::createSlug(Product::class, 'product_slug', $request->product_name);
+        // $product->product_slug=SlugService::createSlug(Product::class, 'product_slug', $request->product_name);
+        $product->product_slug= Str::slug($request->product_name);
 
         $product->regular_price=$request->regular_price;
-        $product->pr_item_price = $request->pr_item_price;
-        $product->sale_price=$request->sale_price;
-        $product->short_description=$request->short_description;
+        // $product->pr_item_price = $request->pr_item_price;
+        // $product->sale_price=$request->sale_price;
+        // $product->short_description=$request->short_description;
         $product->description=$request->description;
         $product->stock = $request->stock;
-        $product->category_id=$request->category_id;
+        // $product->category_id=$request->category_id;
         $product->subcat_id=$request->subcat_id;
-        $product->vendor_id =$request->vendor_id;
+        // $product->vendor_id =$request->vendor_id;
 
         // $product->color=json_encode(array_values(array_filter($request->colors)));
         // $product->size=json_encode(array_values(array_filter($request->sizes)));
 
         if($request->file('product_image'))
         {
-            if(File::exists(public_path('assets/images/product/'.$product->product_image)))
-            	File::delete(public_path('assets/images/product/'.$product->product_image));
+            if(File::exists(public_path('/uploads/product/'.$product->product_image)))
+            	File::delete(public_path('/uploads/product/'.$product->product_image));
 
             $image = $request->file('product_image');
             $input['imagename'] = Carbon::now()->timestamp.'.'.$image->getClientOriginalExtension();
 
-            $destinationPath = public_path('/assets/images/product');
+            $destinationPath = public_path('/uploads/product');
             $img = Image::make($image->getRealPath());
             $img->resize(460, 480, function ($constraint) {
                 $constraint->aspectRatio();
@@ -161,11 +169,11 @@ class ProductController extends Controller
 
 		$product->save();
 
-		$product->categories()->detach();
-      	$product->categories()->attach($request->category_id);
+		// $product->categories()->detach();
+      	// $product->categories()->attach($request->category_id);
 
 		$request->session()->flash('SUCCESS', 'Product updated!');
-        return redirect('admin/product');
+        return redirect('product');
 
 	}
 
@@ -193,8 +201,8 @@ class ProductController extends Controller
             foreach($images as $key => $image) {
 			    $name = Carbon::now()->timestamp.$image->getClientOriginalName();
 
-                //$destinationPath = public_path('assets/images/product/gallery',$name);
-                $image->move(public_path("assets/images/product/gallery"), $name);
+                //$destinationPath = public_path('/uploads/product/gallery',$name);
+                $image->move(public_path("/uploads/product/gallery"), $name);
 
 
                 ////////////////////////
@@ -211,14 +219,14 @@ class ProductController extends Controller
 			}
 		}
 
-		return back()->with('SUCCESS', 'Images uploaded successfully');
+		return back()->with('success', 'Images uploaded successfully');
 	}
 
 
     public function imgDelete(Request $request, $img_id){
         $pr_img = ProductImage::find($img_id);
-        if(FIle::exists(public_path('assets/images/product/gallery/'.$pr_img->product_image)))
-            File::delete(public_path('assest/image/product/gallery'.$pr_img->product));
+        if(FIle::exists(public_path('/uploads/product/gallery/'.$pr_img->product_image)))
+            File::delete(public_path('/uploads/product/gallery'.$pr_img->product));
         $pr_img->delete();
 
         $request->session()->flash('SUCCESS' , 'Image Delete Successfully');
@@ -233,10 +241,19 @@ class ProductController extends Controller
 
         return $product->product_name;
     }
-    public function productdelete($id){
+    public function destroy($id){
+        $product = Product::find($id);
+        $pr_img = ProductImage::where('product_id',$id)->get();
+        
+        foreach($pr_img as $img){
+            File::delete(public_path('/uploads/product/gallery/'.$img->product_image));
+        }
+        
+        if(File::exists(public_path('/uploads/product/'.$product->product_image)))
+        File::delete(public_path('/uploads/product/'.$product->product_image));
         $product = Product::find($id)->delete();
-
-      return back()->with('SUCCESS' , 'Product Delete Successfully');
+      
+        return back()->with('success' , 'Product Delete Successfully');
 
     }
     
@@ -248,4 +265,5 @@ class ProductController extends Controller
         
         // products
     }
+    
 }

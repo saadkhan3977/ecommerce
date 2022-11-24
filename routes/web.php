@@ -11,6 +11,8 @@ use App\Http\Controllers\PackagesController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CheckoutController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -25,9 +27,7 @@ Route::get('/signup', [RegisterController::class, 'register_form'])->name('signu
 Route::get('logout', [LoginController::class, 'logout']);
 Route::get('account/verify/{token}', [LoginController::class, 'verifyAccount'])->name('user.verify'); 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class,'index']);
 
 Auth::routes(['verify' => true]);
 
@@ -45,4 +45,12 @@ Route::group(['middleware' => ['auth','verified']], function(){
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile.index');
     Route::post('/profile/update', [DashboardController::class, 'update'])->name('profile.update');
     Route::resource('product', ProductController::class);
+    Route::get('product/{id}/images', [ProductController::class, 'images']);
+  	Route::post('product/{id}/images', [ProductController::class, 'postImages']);
+  	Route::get('product/image/{id}/delete', [ProductController::class, 'imgDelete']);
+
+    // Add cart
 });
+Route::post('addcart', [CheckoutController::class, 'addcart'])->name('addcart');
+Route::get('ajaxcart', [CheckoutController::class, 'ajaxcart'])->name('cart.ajax');
+Route::get('cart', [CheckoutController::class, 'cart'])->name('cart');

@@ -1,14 +1,25 @@
-@extends('admin/layouts/app')
+@extends('layouts/app')
 @section('title', 'Product')
 @section('page_heading', 'Product Edit')
-@section('breadcrumb')
-<ol class="breadcrumb float-sm-right">
-   <li class="breadcrumb-item"><a href="#">Home</a></li>
-   <li class="breadcrumb-item"><a href="{{url('admin/product')}}">Products</a></li>
-   <li class="breadcrumb-item active">Edit Product</li>
-</ol>
-@endsection
 @section('content')
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Edit Product</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Edit Product</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
 <!-- Main content -->
 <section class="content">
    <div class="container-fluid">
@@ -22,44 +33,34 @@
                </div>
                <!-- /.card-header -->
                <!-- form start -->
-               <form action="{{url('admin/product/'.$product->id.'/update')}}" method="post" enctype="multipart/form-data">
+               <form action="{{route('product.update',$product->id)}}" method="post" enctype="multipart/form-data">
                   @csrf
+                  @method('put')
                   <div class="card-body">
                      <div class="row">
-                        <div class="col-6">
+                        <div class="col-12">
                             
-                            <div class="form-group">
-                              <label>Shop Name</label>
-                              <select name="category_id" class="form-control" data-placeholder="Select a Category" style="width: 100%;">
-                              @foreach($categories as $category)
-                              <option value="{{$category->id}}" {{($category->id == $product->category_id )?"selected":""}}>{{$category->category_name}}</option>
-                              @endforeach
-                              </select>
-                            </div>
-                           
                            <div class="form-group">
                               <label>Categories</label>
                               <select name="subcat_id" class="form-control" data-placeholder="Select a Child Category" style="width: 100%;">
                               @foreach($subcat as $value)
-                              <option value="{{ $value->id }}" {{($product->subcat_id== $value->id )?"selected":""}}>{{ $value->sub_category_name }}</option>
+                              <option value="{{ $value->id }}" {{($product->subcat_id== $value->id )?"selected":""}}>{{ $value->category_name }}</option>
                               @endforeach
                               </select>
                            </div>
                           
-                           <div class="form-group">
+                           <!-- <div class="form-group">
                               <label>Vendors</label>
                               <select name="vendor_id" class="form-control" data-placeholder="Select a Child Category" style="width: 100%;">
                               @foreach($vendors as $vendor)
                               <option value="{{ $vendor->id }}" {{($vendor->id == $value->vendor_id )?"selected":""}}>{{ $vendor->name }}</option>
                               @endforeach
                               </select>
-                           </div>
+                           </div> -->
                                 
                            <label for="product_name" class="control-label mb-1">Product Name</label>
                            <input type="text" class="form-control" name="product_name" value="{{$product->product_name}}">
                            
-                           <label for="product_slug" class="control-label mb-1">Product Slug</label>
-                           <input type="text" class="form-control" name="product_slug" value="{{$product->product_slug}}">
                            
                            
                            <label for="regular_price" class="control-label mb-1"> Price</label>
@@ -71,13 +72,7 @@
                            </div>
                            
                            
-                           <label for="regular_price" class="control-label mb-1"> Pr Item price</label>
-                           <div class="input-group mb-3">
-                              <input type="text" class="form-control" name="pr_item_price" value="{{$product->pr_item_price}}">
-                              <div class="input-group-append">
-                                 <span class="input-group-text">.00</span>
-                              </div>
-                           </div>
+                           
                            {{--  
                            <div class="col-3">
                               <label for="sale_price" class="control-label mb-1">Sale Price</label>
@@ -108,8 +103,8 @@
                               </div>
                            </div>
                            <!-- <div class="col-sm-6"> -->
-                           <a href="{{ asset('assets/images/product/'.$product->product_image) }}" data-toggle="lightbox" id="a_output" data-title="Product Image" data-gallery="gallery">
-                           <img src="{{ asset('assets/images/product/'.$product->product_image) }}" id="output" class="img-fluid mb-2" width="260" height="151" />
+                           <a href="{{ asset('uploads/product/'.$product->product_image) }}" data-toggle="lightbox" id="a_output" data-title="Product Image" data-gallery="gallery">
+                           <img src="{{ asset('uploads/product/'.$product->product_image) }}" id="output" class="img-fluid mb-2" width="260" height="151" />
                            </a>
                            <!-- </div> -->
                            
@@ -131,6 +126,7 @@
    </div>
    <!-- /.container-fluid -->
 </section>
+</div>
 <!-- /.content -->
 @endsection
 @push('scripts')

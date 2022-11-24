@@ -2,7 +2,7 @@
 
 @section('title', 'Products')
 
-@section('page_heading', 'Products list')
+@section('page_heading', 'Product List')
 
 
 @section('content')
@@ -12,12 +12,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Edit Profile</h1>
+            <h1>Product List</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Edit Profile</li>
+              <li class="breadcrumb-item active">Product List</li>
             </ol>
           </div>
         </div>
@@ -67,29 +67,14 @@
         </thead>
         <tbody>
             @foreach($products as $pro)
-            @php
-                $catt =\App\Models\SubCategory::where('id',$pro->subcat_id)->first();
-            @endphp
             <tr>
                 <td>
-                <img width="90" src="{{ asset('assets/images/product/'.$pro->product_image) }}">
+                <img width="90" src="{{ asset('uploads/product/'.$pro->product_image) }}">
                 </td>
                 <td>
                   <strong>Product Name: </strong>{{$pro->product_name}}<br />
-                  <strong>Vendor Name: </strong> @php print_r(get_name_by_id('users',$pro->vendor_id,'name')) @endphp <br />
-                   <strong>Shop: </strong>
-                  @foreach($pro->categories as $cat)
-                    {{$cat->category_name}}
-                  @endforeach
-                  <br />
-                  <strong>Category: </strong>
-                     
-                    @if(get_name_by_id('sub_categories',$pro->subcat_id,'sub_category_name') )
-                    @php print_r(get_name_by_id('sub_categories',$pro->subcat_id,'sub_category_name')) @endphp
-                    @else
-                    N/A
-                    @endif
-                    <br />
+                  <strong>Category: </strong>{{$pro->subcategory->category->category_name}} <br />
+                  <strong>Sub Category: </strong>{{$pro->subcategory->category_name}} <br />
                   <strong>Price: </strong>${{$pro->regular_price}} <br />
                   <strong>Stock: </strong>{{$pro->stock}} <br />
                   
@@ -100,7 +85,7 @@
 
                 </td>
                 <td>
-                    <button type="button" class="btn btn-block btn-success btn-sm" onclick="window.location='{{url("admin/product/".$pro->id."/images")}}'">
+                    <button type="button" class="btn btn-block btn-success btn-sm" onclick="window.location='{{url("/product/".$pro->id."/images")}}'">
                       <i class="far fa-image"></i>&nbsp;Add Image</button>
 
                 </td>
@@ -116,15 +101,19 @@
                 @endcan
                 <td class="project-actions text-center">
                     @can('product-edit')
-                    <a class="btn btn-info btn-sm" href="{{url('admin/product/'.$pro->id.'/edit')}}">
+                    <a class="btn btn-info btn-sm" href="{{route('product.edit',$pro->id)}}">
                         <i class="fas fa-pencil-alt"></i>
                     </a>
                     @endcan
                     
                     @can('product-delete')
-                    <a class="btn btn-danger btn-sm" href="{{route('productdelete',$pro->id)}}">
+                    <form action="{{route('product.destroy',$pro->id)}}" method="post">
+                      @csrf
+                      @method('delete')
+                      <button class="btn btn-danger btn-sm" onclick="return confirm('Are You Sure Want To Delete This.??')" type="submit">
                         <i class="fas fa-trash"></i>
-                    </a>
+                      </button>
+                    </form>
                     @endcan
                 </td>
             </tr>
