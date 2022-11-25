@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Request;
 use Illuminate\Support\Facades\View;
+use App\Models\Category;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,8 +26,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(Request $REQUEST)
     {
-        $page = Request::segment(1);
-        return View::share('page', $page);
+        $data['page'] = Request::segment(1);
+        $data['category'] = Category::all();
+        return View::share($data);
 
     }
 }

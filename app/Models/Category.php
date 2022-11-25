@@ -13,10 +13,10 @@ class Category extends Model
     use HasFactory;
     
     
-    // public function subcategory() 
-    // {
-    //     return $this->belongsTo('App\Models\SubCategory','id','category_ids');
-    // }
+    public function subcategory() 
+    {
+        return $this->hasMany(SubCategory::class,'category_id','id');
+    }
 
 
 }
