@@ -28,7 +28,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return Auth::user();
+        // return Auth::user();
         return view('home');
     }
     

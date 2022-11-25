@@ -23,6 +23,8 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{asset('/frontend/css/style.css')}}" rel="stylesheet">
+    <!-- Confirmation -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
     <!-- Toastr -->
   <link rel="stylesheet" href="{{asset('/admin/plugins/toastr/toastr.min.css')}}">
 </head>
@@ -289,6 +291,9 @@
 
     <!-- Template Javascript -->
     <script src="{{asset('/frontend/js/main.js')}}"></script>
+    <!-- Confirmation -->
+<!-- $ npm install jquery-confirm -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
     <!-- Toastr -->
 <script src="{{asset('/admin/plugins/toastr/toastr.min.js')}}"></script>
 <script>
@@ -305,6 +310,7 @@
 @endif
 </script>
 </body>
+
 <!-- Image loader -->
 <div id='loader' style="display:none" >
   <img src='{{asset("/frontend/loader/loader.gif")}}' width='300px' height='300px'>
@@ -360,6 +366,7 @@
         $("#loader").hide();
     });
 
+    
     function cartfetch()
     {
         $.ajax({
@@ -367,12 +374,116 @@
             type: "get",
             data: {},
             success: function(data) {
-                $('#cartcount').text(data);
+                $('#cartcount').text(data.carts);
+                $('#subtotal').text(data.total);
                 // toastr.success(data.success);
                 // Do stuff when the AJAX call returns
             }
         });
     }
     cartfetch();
-</script>
+
+    // cart update
+    function cartplus(id)
+    {
+        var price = $('#price-'+id).text();
+        var oldquant = $('.quantity-val-'+id).val();
+        var quant = Number(oldquant) + Number(1);
+        var t = price * quant;
+        
+        var total = $('#total-'+id).text(t);
+        
+        
+        
+        var type = 'plus';
+        var product_id = $('.quantity-val-'+id).attr('data-product');
+
+        $.ajax({
+            url: "{{route('updatecart')}}",
+            type: "POST",
+            data: {_token: '{{ csrf_token() }}', id: id,quant:quant,type:type,product_id:product_id},
+            success: function(data) {
+                toastr.success(data.success);
+                cartfetch();
+                // Do stuff when the AJAX call returns
+            }
+        });
+        // alert(id);
+    }
+    function cartminus(id)
+    {
+        var price = $('#price-'+id).text();
+        var oldquant = $('.quantity-val-'+id).val();
+        if(oldquant > 1)
+        {
+            var quant = Number(oldquant) - Number(1);
+            var t = price * quant;
+            
+            var total = $('#total-'+id).text(t);
+            
+            
+            
+            var type = 'minus';
+            var product_id = $('.quantity-val-'+id).attr('data-product');
+            
+            $.ajax({
+                url: "{{route('updatecart')}}",
+                type: "POST",
+                data: {_token: '{{ csrf_token() }}', id: id,quant:quant,type:type,product_id:product_id},
+                success: function(data) {
+                    toastr.success(data.success);
+                    cartfetch();
+                    
+                    // Do stuff when the AJAX call returns
+                }
+            });
+        }
+        // alert(id);
+    }
+    function removecart(id)
+    {
+
+        $.confirm({
+            title: 'Confirm!',
+            
+            content: 'Are You Sure??!',
+            buttons: {
+                
+                cancel: function () {
+                    // $.alert('Canceled!');
+                },
+                somethingElse: {
+                    text: 'confirm',
+                    btnClass: 'btn-red',
+                    keys: ['enter', 'shift'],
+                    action: function(){
+
+                        $.ajax({
+                            url: "{{route('deletecart')}}",
+                            type: "get",
+                            data: {id: id},
+                            success: function(data) {
+                                toastr.success(data.success);
+                                $('#tr-'+id).closest("tr").hide();
+                                cartfetch();
+                                
+                                // Do stuff when the AJAX call returns
+                            }
+                        });
+                        // $.alert('Something else?');
+                    }
+                }
+            }
+        });
+        // if(confirm('Are You Sure??'))
+        // {
+
+            
+        // }
+    }
+    </script>
+<script>
+    
+    
+    </script>
 </html>

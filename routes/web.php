@@ -54,3 +54,5 @@ Route::group(['middleware' => ['auth','verified']], function(){
 Route::post('addcart', [CheckoutController::class, 'addcart'])->name('addcart');
 Route::get('ajaxcart', [CheckoutController::class, 'ajaxcart'])->name('cart.ajax');
 Route::get('cart', [CheckoutController::class, 'cart'])->name('cart');
+Route::post('updatecart', [CheckoutController::class, 'updatecart'])->name('updatecart');
+Route::get('deletecart', [CheckoutController::class, 'deletecart'])->name('deletecart');
