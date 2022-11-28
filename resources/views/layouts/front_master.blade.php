@@ -389,25 +389,29 @@
         var price = $('#price-'+id).text();
         var oldquant = $('.quantity-val-'+id).val();
         var quant = Number(oldquant) + Number(1);
-        var t = price * quant;
-        
-        var total = $('#total-'+id).text(t);
-        
-        
-        
-        var type = 'plus';
-        var product_id = $('.quantity-val-'+id).attr('data-product');
+        if(quant > 1)
+        {
 
-        $.ajax({
-            url: "{{route('updatecart')}}",
-            type: "POST",
-            data: {_token: '{{ csrf_token() }}', id: id,quant:quant,type:type,product_id:product_id},
-            success: function(data) {
-                toastr.success(data.success);
-                cartfetch();
-                // Do stuff when the AJAX call returns
-            }
-        });
+            var t = price * quant;
+            
+            var total = $('#total-'+id).text(t);
+            
+            
+            
+            var type = 'plus';
+            var product_id = $('.quantity-val-'+id).attr('data-product');
+            
+            $.ajax({
+                url: "{{route('updatecart')}}",
+                type: "POST",
+                data: {_token: '{{ csrf_token() }}', id: id,quant:quant,type:type,product_id:product_id},
+                success: function(data) {
+                    toastr.success(data.success);
+                    cartfetch();
+                    // Do stuff when the AJAX call returns
+                }
+            });
+        }
         // alert(id);
     }
     function cartminus(id)

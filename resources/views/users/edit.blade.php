@@ -70,7 +70,7 @@
                                 <select name="roles[]" class="form-control" required>
                                     <option>select role</option>
                                     @foreach($roles as $role)
-                                    <option value="{{$role->id}}">{{$role->name}}</option>
+                                    <option value="{{$role->id}}" {{ $user->getRoleNames()->contains($role->name) ? 'selected' : '' }}>{{$role->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
