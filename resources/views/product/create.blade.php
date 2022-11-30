@@ -40,7 +40,7 @@
          <div class="card-body">
             <div class="row">
                <div class="col-sm-12">
-                  <!-- <div class="form-group">
+                  <div class="form-group">
                      <label>Category</label>
                      <select name="category_id" class="form-control"  data-placeholder="Select a Category" style="width: 100%;">
                         <option value="">--Select category--</option>
@@ -48,14 +48,12 @@
                         <option value="{{$category->id}}">{{$category->category_name}}</option>
                         @endforeach
                      </select>
-                  </div> -->
+                  </div>
                   
                   <div class="form-group">
                      <label>Categories</label>
                      <select name="subcat_id" class="form-control" data-placeholder="Select a Category" style="width: 100%;">
-                        @foreach($subcat as $value)
-                        <option value="{{ $value->id }}">{{ $value->category_name }}</option>
-                        @endforeach
+                        
                      </select>
                   </div>
                   
@@ -101,6 +99,21 @@
                      <input type="number" value="1" class="form-control" name="stock" value="{{old('stock')}}">
                   </div>
                   <div class="form-group">
+                     <label>Size</label>
+                     <input type="checkbox" id="size" style="width:20px" onclick="showsize()" class="form-control" name="size" >
+                  </div>
+                  <span id="customsize">
+                     
+                  </span>
+                  
+                  <div class="form-group">
+                     <label>Color</label>
+                     <input type="checkbox" id="color" style="width:20px" onclick="showcolor()" class="form-control" name="color" >
+                  </div>
+                  <span id="customcolor">
+                     
+                  </span>
+                  <div class="form-group">
                      <label>Description</label>
                      <textarea class="form-control" rows="3" name="description">{{old('description')}}</textarea>
                   </div>
@@ -134,106 +147,67 @@
 </section>
 </div>
 <!-- /.content -->
-@endsection
-@push('scripts')
-<!-- Select2 -->
-<script src="{{asset('assets/backend_assets/plugins/select2/js/select2.full.min.js')}}"></script>
-<!-- bootstrap color picker -->
-<script src="{{asset('assets/backend_assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js')}}"></script>
-<script type="text/javascript">
-   $(function () {
-   
-       //Initialize Select2 Elements
-       $('.select2').select2()
-   
-       //Initialize Select2 Elements
-       $('.select2bs4').select2({
-         theme: 'bootstrap4'
-       })
-   
-       //color picker with addon
-       $('.my-colorpicker2').colorpicker()
-   
-       $('.my-colorpicker2').on('colorpickerChange', function(event) {
-   
-         $(this).closest('.form-group').find('.my-colorpicker2 .fa-square').css('color', event.color.toString());
-         /*$('.my-colorpicker2 .fa-square').css('color', event.color.toString());*/
-       })
-   
-   })
-   
-</script>
-<!-- Ekko Lightbox -->
-<script src="{{asset('assets/backend_assets/plugins/ekko-lightbox/ekko-lightbox.min.js')}}"></script>
-<!-- Page specific script -->
-<script>
-   $(function () {
-       $(document).on('click', '[data-toggle="lightbox"]', function(event) {
-         event.preventDefault();
-         $(this).ekkoLightbox({
-           alwaysShowClose: true
-         });
-       });
-   })
-</script>
-<script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
-    $("#product_name").keyup(function() {
-      var Text = $(this).val();
-      Text = Text.toLowerCase();
-      Text = Text.replace(/[^\w-]+/g, '-');
-      $("#product_slug").val(Text);  
-    });
-    
-</script>
 <script>
-   var loadFile = function(event) {
-       var image = document.getElementById('output');
-       var a_image = document.getElementById('a_output');
+   var count = 1;
+   // Size
+   function showsize(){
+      if($('#size').is(':checked'))
+      {
+         $("#customsize").append('<div class="row" id="size-'+count+'" ><div class="col-3"><div class="form-group"><label>size name</label><input required="" type="text" class="form-control" name="size_name[]"></div></div><div class="col-3"><div class="form-group"><label>size Quantity</label><input required="" type="number" class="form-control" name="size_quantity[]" ></div></div><div class="col-3"><div class="form-group"><label>size Price</label><input required="" type="number" class="form-control" name="size_price[]" ></div></div><div class="col-3"><div class="form-group"><button class="btn btn-info" type="button" onclick="addsize('+count+')"><i class="fa fa-plus"></i></button></div></div></div>');
+      }
+      else
+      {
+         $("#customsize").empty();
+      }
+   }
+   function addsize(val){
+      count++;
+         $("#customsize").append('<div class="row" id="size-'+count+'" ><div class="col-3"><div class="form-group"><label>size name</label><input required="" type="text" class="form-control" name="size_name[]" ></div></div><div class="col-3"><div class="form-group"><label>size Quantity</label><input required="" type="number" class="form-control" name="size_quantity[]" ></div></div><div class="col-3"><div class="form-group"><label>size Price</label><input required="" type="number" class="form-control" name="size_price[]" ></div></div><div class="col-3"><div class="form-group"><button class="btn btn-danger" type="button" onclick="removesize('+count+')"><i class="fa fa-trash"></i></button><button class="btn btn-info" type="button" onclick="addsize('+count+')"><i class="fa fa-plus"></i></button></div></div></div>');
+   }
+   function removesize(val){
+         $("#size-"+val).remove();
+   }
    
-       image.src = URL.createObjectURL(event.target.files[0]);
-       a_image.href = URL.createObjectURL(event.target.files[0]);
-   
-       image.width=260;
-       image.height=151;
-   
-       /*image.width=260;
-       image.height=151;*/
-   };
-   
-   $("#color-plus").on("click", function() {
-   
-       var color_code = $(this).closest('.form-group').find('input');
-       var color = $(this).closest('.form-group').find('.fa-square').css('color');
-   
-       if(color_code.val()){
-           $('.noc').last('.form-group').append('<div class="form-group"><div class="input-group"><input type="text" class="form-control" name="colors[]" value="'+color_code.val()+'"><div class="input-group-append"><span class="input-group-text"><i class="fas fa-square" style="color:'+color+'"></i></span><span class="input-group-text color-minus"><i class="fas fa-minus"></i></span></div></div></div>');
-           color_code.val("");
-           $(this).closest('.form-group').find('.fa-square').css('color','');
-       }
-       else{
-           toastr.error('Please Select Color');
-       }
-   });
-   $(document).on("click", ".color-minus", function() {
-       $(this).closest(".form-group").remove();
-   });
-   
-   $("#size-plus").on("click", function(){
-       $('.nos').last('.form-group').append('<div class="form-group"><div class="input-group"><input type="text" class="form-control" name="sizes[]"><div class="input-group-append"><span class="input-group-text size-minus"><i class="fas fa-minus"></i></span></div></div></div></div>')
-   });
-   
-   $(document).on("click", ".size-minus", function() {
-       $(this).closest(".form-group").remove();
+   // color
+   function showcolor(){
+      if($('#color').is(':checked'))
+      {
+         $("#customcolor").append('<div class="row" id="color-'+count+'" ><div class="col-3"><div class="form-group"><label>color name</label><input required="" type="text" class="form-control" name="color_name[]" ></div></div><div class="col-3"><div class="form-group"><label>color Quantity</label><input required="" type="number" class="form-control" name="color_quantity[]" ></div></div><div class="col-3"><div class="form-group"><label>color Price</label><input required="" type="number" class="form-control" name="color_price[]" ></div></div><div class="col-3"><div class="form-group"><button class="btn btn-info" type="button" onclick="addcolor('+count+')"><i class="fa fa-plus"></i></button></div></div></div>');
+      }
+      else
+      {
+         $("#customcolor").empty();
+      }
+   }
+   function addcolor(val){
+      count++;
+         $("#customcolor").append('<div class="row" id="color-'+count+'" ><div class="col-3"><div class="form-group"><label>color name</label><input required="" type="text" class="form-control" name="color_name[]" ></div></div><div class="col-3"><div class="form-group"><label>color Quantity</label><input required="" type="number" class="form-control" name="color_quantity[]" ></div></div><div class="col-3"><div class="form-group"><label>color Price</label><input required="" type="number" class="form-control" name="color_price[]" ></div></div><div class="col-3"><div class="form-group"><button class="btn btn-danger" type="button" onclick="removecolor('+count+')"><i class="fa fa-trash"></i></button><button class="btn btn-info" type="button" onclick="addcolor('+count+')"><i class="fa fa-plus"></i></button></div></div></div>');
+   }
+   function removecolor(val){
+         $("#color-"+val).remove();
+   }
+
+
+   $('select[name="category_id"]').on('change', function () {
+      var catId = $(this).val();
+      if (catId) {
+         $.ajax({
+               url: '/subcatories/' + catId,
+               type: "GET",
+               dataType: "json",
+               success: function (data) {
+                  $('select[name="subcat_id"]').empty();
+                  $.each(data.success, function (key, value) {
+                     $('select[name="subcat_id"]').append('<option value=" ' + key + '">' + value.category_name + '</option>');
+                  })
+               }
+
+         })
+      } else {
+         $('select[name="subcat_id"]').empty();
+      }
    });
 </script>
-@endpush
-@push('css')
-<!-- Select2 -->
-<link rel="stylesheet" href="{{asset('assets/backend_assets/plugins/select2/css/select2.min.css')}}">
-<link rel="stylesheet" href="{{asset('assets/backend_assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
-<!-- Ekko Lightbox -->
-<link rel="stylesheet" href="{{asset('assets/backend_assets/plugins/ekko-lightbox/ekko-lightbox.css')}}">
-<!-- Bootstrap Color Picker -->
-<link rel="stylesheet" href="{{asset('assets/backend_assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css')}}">
-@endpush
+@endsection

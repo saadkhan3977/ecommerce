@@ -28,9 +28,14 @@ class SubCategoryController extends Controller
         $data['categorys'] = Category::all();
         return view('subcategory.categoryedit',$data);
     }
-
-
-
+    
+    
+    
+    public function subcatories($id)
+    {
+        $data = SubCategory::where('category_id',$id)->get();
+        return response()->json(['success'=>$data]);
+    }
     public function update(Request $request, $id)
     {
         $category = SubCategory::find($id);

@@ -7,6 +7,8 @@ use Auth;
 use Hash;
 use Validator;
 use App\Models\User;
+use App\Models\Order;
+use App\Models\Product;
 use Session;
 
 class DashboardController extends Controller
@@ -29,7 +31,10 @@ class DashboardController extends Controller
     public function index()
     {
         // return Auth::user();
-        return view('home');
+        $data['users'] = User::all()->count();
+        $data['orders'] = Order::all()->count();
+        $data['products'] = Product::all()->count();
+        return view('home',$data);
     }
     
     public function profile()

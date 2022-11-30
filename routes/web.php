@@ -28,6 +28,7 @@ Route::get('logout', [LoginController::class, 'logout']);
 Route::get('account/verify/{token}', [LoginController::class, 'verifyAccount'])->name('user.verify'); 
 
 Route::get('/', [HomeController::class,'index']);
+Route::get('/detail/{id}', [HomeController::class,'product_detail'])->name('product.detail');
 
 Auth::routes(['verify' => true]);
 
@@ -45,14 +46,19 @@ Route::group(['middleware' => ['auth','verified']], function(){
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile.index');
     Route::post('/profile/update', [DashboardController::class, 'update'])->name('profile.update');
     Route::resource('product', ProductController::class);
+    Route::get('subcatories/{category}', [SubCategoryController::class,'subcatories']);
     Route::get('product/{id}/images', [ProductController::class, 'images']);
   	Route::post('product/{id}/images', [ProductController::class, 'postImages']);
   	Route::get('product/image/{id}/delete', [ProductController::class, 'imgDelete']);
 
     // Add cart
 });
+
+
 Route::post('addcart', [CheckoutController::class, 'addcart'])->name('addcart');
 Route::get('ajaxcart', [CheckoutController::class, 'ajaxcart'])->name('cart.ajax');
 Route::get('cart', [CheckoutController::class, 'cart'])->name('cart');
 Route::post('updatecart', [CheckoutController::class, 'updatecart'])->name('updatecart');
 Route::get('deletecart', [CheckoutController::class, 'deletecart'])->name('deletecart');
+Route::get('checkout', [CheckoutController::class, 'checkout'])->name('checkout');
+Route::post('post_checkout', [CheckoutController::class, 'post_checkout'])->name('post_checkout');

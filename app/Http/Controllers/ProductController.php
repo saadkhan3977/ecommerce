@@ -10,6 +10,8 @@ use App\Models\Category;
 use App\Models\Cart;
 use App\Models\SubCategory;
 use App\Models\ProductImage;
+use App\Models\VeriantSize;
+use App\Models\VeriantColor;
 use App\Models\User;
 
 use Carbon\Carbon;
@@ -58,15 +60,16 @@ class ProductController extends Controller
         return view('product.create')->with('subcat',$subcat)->with('categories',$categories)->with('vendors',$vendors);
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         
-        // return $request->all();
         
         $request->validate([
             'product_name' => 'required',
             'regular_price' => 'required',
+            'category_id' =>'required',
             'subcat_id' =>'required',
-            'pr_item_price' =>'required',
+            // 'pr_item_price' =>'required',
             'stock'         =>'required',
             'product_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
         ]);
@@ -92,6 +95,7 @@ class ProductController extends Controller
         // $product->color = json_encode(array_values(array_filter($request->colors)));
         // $product->size = json_encode(array_values(array_filter($request->sizes)));
 
+        // return $request->all();
 
         if($request->file('product_image'))
         {
@@ -105,6 +109,26 @@ class ProductController extends Controller
             $product->product_image = $input['imagename'];
         }
         $product->save();
+
+        $product_id = $product->id;
+        if(isset($request->size))
+        {
+            VeriantSize::create([
+                'name' => json_encode($request->size_name),
+                'quantity' => json_encode($request->size_quantity),
+                'price' => json_encode($request->size_price),
+                'product_id' => $product_id,
+            ]);
+        }
+        if(isset($request->color))
+        {
+            VeriantColor::create([
+                'name' => json_encode($request->color_name),
+                'quantity' => json_encode($request->color_quantity),
+                'price' => json_encode($request->color_price),
+                'product_id' => $product_id,
+            ]);
+        }
 
         $request->session()->flash('SUCCESSS' , 'Product inserted!');
 
